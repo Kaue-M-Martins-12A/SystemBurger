@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burger - Cardápio</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <script src="/js/auth.js" defer></script>
+    <script src="/js/cart.js" defer></script>
+    <script src="/js/product.js" defer></script>
+    <style>
+        .main-header {
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 30px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 40px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .tab-btn {
+            background: none;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            border-bottom: 2px solid transparent;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            font-weight: 700;
+            border-bottom-color: black;
+            color: black;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            border-radius: 12px;
+            overflow: hidden;
+            display: none;
+            /* Hidden by default, shown by category */
+        }
+
+        .product-card.visible {
+            display: block;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .main-footer {
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="main-header">
+        <div class="logo">
+            <a href="/" style="display: flex; align-items: center; gap: 8px; color: inherit; text-decoration: none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M3 13.5C3 12.6716 3.67157 12 4.5 12H19.5C20.3284 12 21 12.6716 21 13.5C21 14.3284 20.3284 15 19.5 15H4.5C3.67157 15 3 14.3284 3 13.5Z" />
+                    <path
+                        d="M4.5 17C3.67157 17 3 17.6716 3 18.5C3 19.3284 3.67157 20 4.5 20H19.5C20.3284 20 21 19.3284 21 18.5C21 17.6716 20.3284 17 19.5 17H4.5Z" />
+                    <path
+                        d="M21 9C21 5.13401 16.9706 2 12 2C7.02944 2 3 5.13401 3 9C3 9.55228 3.44772 10 4 10H20C20.5523 10 21 9.55228 21 9Z" />
+                </svg>
+                <span>Burger</span>
+            </a>
+        </div>
+        <nav class="nav-links">
+            <a href="/cardapio">Menu</a>
+            <a href="/#promocoes">Promoções</a>
+            <a href="#">Sobre nós</a>
+        </nav>
+        <div class="header-actions">
+            <a href="/carrinho" id="cart-link">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span id="cart-count">0</span>
+            </a>
+            <a href="/perfil">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&q=80"
+                    alt="Profile" class="profile-img">
+            </a>
+        </div>
+    </header>
+
+    <main class="section container">
+        <h1 class="section-title" style="font-size: 2.2rem; margin-bottom: 40px;">Nosso cardápio</h1>
+
+        <div class="category-tabs">
+            <button class="tab-btn active" onclick="filterCategory('burgers', this)">Burgers</button>
+            <button class="tab-btn" onclick="filterCategory('acompanhamentos', this)">Acompanhamentos</button>
+            <button class="tab-btn" onclick="filterCategory('bebidas', this)">Bebidas</button>
+            <button class="tab-btn" onclick="filterCategory('sobremesas', this)">Sobremesas</button>
+        </div>
+
+        <div class="product-grid" id="menu-grid">
+            <!-- Burgers -->
+            <div class="product-card visible" data-category="burgers">
+                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                    alt="O clássico" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-name">O clássico</h3>
+                    <p class="product-desc">Nosso hambúrguer especial com todos os acompanhamentos.</p>
+                </div>
+            </div>
+            <div class="product-card visible" data-category="burgers">
+                <img src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                    alt="O Picante" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-name">O Picante</h3>
+                    <p class="product-desc">Para quem gosta de uma pimenta extra.</p>
+                </div>
+            </div>
+            <div class="product-card visible" data-category="burgers">
+                <img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                    alt="O Duplo" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-name">O Duplo</h3>
+                    <p class="product-desc">O dobro de carne, o dobro de sabor.</p>
+                </div>
+            </div>
+
+            <!-- Acompanhamentos -->
+            <div class="product-card" data-category="acompanhamentos">
+                <img src="https://images.unsplash.com/photo-1573080493719-44933d980456?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                    alt="Batatas fritas" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-name">Batatas fritas</h3>
+                    <p class="product-desc">Crocante e dourado na medida certa.</p>
+                </div>
+            </div>
+            <div class="product-card" data-category="acompanhamentos">
+                <img src="https://images.unsplash.com/photo-1639024471283-035188835111?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                    alt="Anéis de Cebola" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-name">Anéis de Cebola</h3>
+                    <p class="product-desc">Perfeitamente empanado e frito.</p>
+                </div>
+            </div>
+
+            <!-- Bebidas -->
+            <div class="product-card" data-category="bebidas">
+                <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                    alt="Soda" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-name">Soda</h3>
+                    <p class="product-desc">Recrescante e disponível em diversos sabores.</p>
+                </div>
+            </div>
+
+            <!-- Sobremesas -->
+            <div class="product-card" data-category="sobremesas">
+                <img src="https://images.unsplash.com/photo-1589119908995-c6837fa14878?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                    alt="Brownie" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-name">Brownie</h3>
+                    <p class="product-desc">Quente e acompanhado de calda de chocolate.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <p class="copyright">© 2025 Burger . Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        function filterCategory(category, btn) {
+            // Update tabs
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update products
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                if (card.dataset.category === category) {
+                    card.classList.add('visible');
+                } else {
+                    card.classList.remove('visible');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

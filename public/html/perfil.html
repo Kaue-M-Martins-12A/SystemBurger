@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burger - Meu Perfil</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/js/auth.js" defer></script>
+    <script src="/js/cart.js" defer></script>
+    <style>
+        .main-header {
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="main-header">
+        <div class="logo">
+            <a href="/" style="display: flex; align-items: center; gap: 8px; color: inherit; text-decoration: none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M3 13.5C3 12.6716 3.67157 12 4.5 12H19.5C20.3284 12 21 12.6716 21 13.5C21 14.3284 20.3284 15 19.5 15H4.5C3.67157 15 3 14.3284 3 13.5Z" />
+                    <path
+                        d="M4.5 17C3.67157 17 3 17.6716 3 18.5C3 19.3284 3.67157 20 4.5 20H19.5C20.3284 20 21 19.3284 21 18.5C21 17.6716 20.3284 17 19.5 17H4.5Z" />
+                    <path
+                        d="M21 9C21 5.13401 16.9706 2 12 2C7.02944 2 3 5.13401 3 9C3 9.55228 3.44772 10 4 10H20C20.5523 10 21 9.55228 21 9Z" />
+                </svg>
+                <span>Burger</span>
+            </a>
+        </div>
+        <nav class="nav-links">
+            <a href="/cardapio">Menu</a>
+            <a href="/#promocoes">Promoções</a>
+            <a href="#">Sobre nós</a>
+        </nav>
+        <div class="header-actions">
+            <a href="/carrinho" id="cart-link">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span id="cart-count">0</span>
+            </a>
+            <a href="/perfil">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&q=80"
+                    alt="Profile" class="profile-img">
+            </a>
+        </div>
+    </header>
+
+    <main class="container profile-section">
+        <h1 class="profile-title">Meu Perfil</h1>
+
+        <div class="profile-info">
+            <h2 class="sub-title">Informações Pessoais</h2>
+            <form class="auth-form" id="profile-form">
+                <div>
+                    <label class="input-label">Nome</label>
+                    <input type="text" id="prof-name" placeholder="Seu nome" class="input-field"
+                        style="background-color: white; border: 1px solid #ddd;" required>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label class="input-label">Email</label>
+                    <input type="email" id="prof-email" placeholder="Seu email" class="input-field"
+                        style="background-color: white; border: 1px solid #ddd;" required>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label class="input-label">Telefone</label>
+                    <input type="tel" id="prof-phone" placeholder="Seu telefone" class="input-field"
+                        style="background-color: white; border: 1px solid #ddd;">
+                </div>
+                <div style="margin-top: 30px; display: flex; gap: 15px;">
+                    <button type="submit" class="btn-primary" id="prof-btn">Salvar Alterações</button>
+                    <button type="button" class="btn-secondary" onclick="Auth.logout()">Sair da Conta</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="profile-orders">
+            <h2 class="sub-title">Histórico de Pedidos</h2>
+            <div class="order-history-container">
+                <table class="order-history">
+                    <thead>
+                        <tr>
+                            <th>Pedido</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-tbody">
+                        <tr>
+                            <td colspan="4">Carregando histórico...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="profile-recommendations" style="margin-top: 40px;">
+            <h2 class="sub-title">Recomendações Baseadas nas Suas Compras</h2>
+            <div id="recs-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
+                Carregando recomendações...
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('authLoaded', async () => {
+            if (!Auth.isLoggedIn()) {
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                const resProfile = await fetch('/api/user/profile');
+                if (resProfile.ok) {
+                    const prof = await resProfile.json();
+                    document.getElementById('prof-name').value = prof.name || '';
+                    document.getElementById('prof-email').value = prof.email || '';
+                    document.getElementById('prof-phone').value = prof.phone || '';
+                } else {
+                    const user = Auth.getUser();
+                    document.getElementById('prof-name').value = user.name || '';
+                    document.getElementById('prof-email').value = user.email || '';
+                }
+            } catch (err) {
+                const user = Auth.getUser();
+                document.getElementById('prof-name').value = user.name || '';
+                document.getElementById('prof-email').value = user.email || '';
+            }
+
+            // Handle Profile Update
+            document.getElementById('profile-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('prof-btn');
+                btn.disabled = true;
+                btn.textContent = 'Salvando...';
+
+                try {
+                    const res = await fetch('/api/user/profile', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: document.getElementById('prof-name').value,
+                            email: document.getElementById('prof-email').value,
+                            phone: document.getElementById('prof-phone').value
+                        })
+                    });
+                    const data = await res.json();
+                    if (res.ok) alert('Perfil atualizado com sucesso!');
+                    else alert(data.error || 'Erro ao atualizar.');
+                } catch (err) {
+                    alert('Erro de conexão ao servidor.');
+                }
+                btn.disabled = false;
+                btn.textContent = 'Salvar Alterações';
+            });
+
+            // Fetch Orders
+            try {
+                const resOrders = await fetch('/api/orders');
+                if (resOrders.ok) {
+                    const orders = await resOrders.json();
+                    const tbody = document.getElementById('orders-tbody');
+                    if (orders.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4">Nenhum pedido encontrado.</td></tr>';
+                    } else {
+                        tbody.innerHTML = orders.map(o => `
+                            <tr>
+                                <td>#${o.id}</td>
+                                <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                                <td><span class="status-pill">${o.status}</span></td>
+                                <td>R$ ${o.total.toFixed(2).replace('.', ',')}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (e) {
+                console.error('Erro ao buscar pedidos', e);
+            }
+
+            // Fetch Recommendations
+            try {
+                const resRecs = await fetch('/api/recommendations');
+                if (resRecs.ok) {
+                    const recsData = await resRecs.json();
+                    // Choose lastPurchased if any, else mostPopular
+                    const items = recsData.lastPurchased.length > 0 ? recsData.lastPurchased : recsData.mostPopular;
+                    const c = document.getElementById('recs-container');
+
+                    if (items.length === 0) {
+                        c.innerHTML = 'Nenhuma recomendação disponível no momento.';
+                    } else {
+                        c.innerHTML = items.map(p => `
+                            <div style="background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); width: 200px;">
+                                <img src="${p.image}" alt="${p.name}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px;">
+                                <h4 style="margin: 10px 0 5px 0; font-size: 1rem;">${p.name}</h4>
+                                <p style="font-weight: 600; color: #ff4757;">R$ ${p.price.toFixed(2).replace('.', ',')}</p>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (e) {
+                console.error('Erro ao buscar recomendações', e);
+            }
+        });
+    </script>
+</body>
+
+</html>

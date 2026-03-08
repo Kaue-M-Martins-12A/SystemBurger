@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Burger - Home</title>
+  <link rel="stylesheet" href="/styles/styles.css">
+  <script src="/js/auth.js" defer></script>
+  <script src="/js/cart.js" defer></script>
+  <script src="/js/product.js" defer></script>
+  <!-- Unsplash dynamic background or local images would go here -->
+  <style>
+    .main-header {
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      height: 450px;
+      border-radius: 15px;
+      overflow: hidden;
+      margin: 20px 40px;
+      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1550547660-d9450f859349?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      text-align: center;
+    }
+
+    .hero-content {
+      max-width: 600px;
+      padding: 20px;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      line-height: 1.1;
+    }
+
+    /* Sections */
+    .section {
+      padding: 40px;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .product-card {
+      border-radius: 15px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 15px;
+    }
+
+    .product-info {
+      padding: 15px 0;
+    }
+
+    .product-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .product-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+
+    /* Promo Card */
+    .promo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .promo-card {
+      display: flex;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .promo-image {
+      width: 45%;
+      height: 250px;
+      object-fit: cover;
+    }
+
+    .promo-info {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    /* Footer */
+    .main-footer {
+      padding: 60px 40px;
+      background: white;
+      border-top: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .footer-nav {
+      display: flex;
+      gap: 30px;
+      font-size: 0.9rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="main-header">
+    <div class="logo">
+      <a href="/" style="display: flex; align-items: center; gap: 8px; color: inherit; text-decoration: none;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M3 13.5C3 12.6716 3.67157 12 4.5 12H19.5C20.3284 12 21 12.6716 21 13.5C21 14.3284 20.3284 15 19.5 15H4.5C3.67157 15 3 14.3284 3 13.5Z" />
+          <path
+            d="M4.5 17C3.67157 17 3 17.6716 3 18.5C3 19.3284 3.67157 20 4.5 20H19.5C20.3284 20 21 19.3284 21 18.5C21 17.6716 20.3284 17 19.5 17H4.5Z" />
+          <path
+            d="M21 9C21 5.13401 16.9706 2 12 2C7.02944 2 3 5.13401 3 9C3 9.55228 3.44772 10 4 10H20C20.5523 10 21 9.55228 21 9Z" />
+        </svg>
+        <span>Burger</span>
+      </a>
+    </div>
+    <nav class="nav-links">
+      <a href="/cardapio">Menu</a>
+      <a href="#promocoes">Promoções</a>
+      <a href="#">Sobre nós</a>
+    </nav>
+    <div class="header-actions">
+      <a href="/carrinho" id="cart-link">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span id="cart-count">0</span>
+      </a>
+      <a href="/perfil">
+        <img
+          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&q=80"
+          alt="Profile" class="profile-img">
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Os melhores burgers da cidade</h1>
+        <p style="margin-bottom: 30px; font-size: 1.1rem;">Ingredientes frescos, receitas exclusivas e um sabor
+          inigualável. Experimente o melhor burger da sua vida.</p>
+        <a href="/cardapio" class="btn-primary" style="padding: 15px 40px;">Ver Cardápio</a>
+      </div>
+    </section>
+
+    <section class="section container">
+      <h2 class="section-title">Mais Vendidos</h2>
+      <div class="product-grid">
+        <div class="product-card">
+          <img
+            src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            alt="Burger Clássico" class="product-image">
+          <div class="product-info">
+            <h3 class="product-name">Burger Clássico</h3>
+            <p class="product-desc">O sabor tradicional que você adora.</p>
+          </div>
+        </div>
+        <div class="product-card">
+          <img
+            src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            alt="Burger Bacon" class="product-image">
+          <div class="product-info">
+            <h3 class="product-name">Burger Bacon</h3>
+            <p class="product-desc">Burger com bacon crocante e queijo derretido.</p>
+          </div>
+        </div>
+        <div class="product-card">
+          <img
+            src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+            alt="Burger Onion" class="product-image">
+          <div class="product-info">
+            <h3 class="product-name">Burger Onion</h3>
+            <p class="product-desc">Burger com anéis de cebola e molho especial.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="promocoes">
+      <h2 class="section-title">Promoções</h2>
+      <div class="promo-list">
+        <div class="promo-card">
+          <img
+            src="https://images.unsplash.com/photo-1512152272829-e3139592d56f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+            alt="Combo Família" class="promo-image">
+          <div class="promo-info">
+            <h3 class="promo-title">Combo Família</h3>
+            <p class="promo-desc">2 Burgers + 2 Batatas + 2 Refrigerantes. Oferta especial por tempo limitado.</p>
+            <a href="/cardapio" class="btn-primary" style="padding: 10px 20px; font-size: 0.85rem;">Ver Promoção</a>
+          </div>
+        </div>
+        <div class="promo-card">
+          <img
+            src="https://images.unsplash.com/photo-1610440042657-612c34d95e9f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+            alt="Desconto Estudante" class="promo-image">
+          <div class="promo-info">
+            <h3 class="promo-title">Desconto Estudante</h3>
+            <p class="promo-desc">15% de desconto em qualquer pedido para estudantes.</p>
+            <a href="/cardapio" class="btn-primary" style="padding: 10px 20px; font-size: 0.85rem;">Ver Promoção</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="main-footer">
+    <div class="footer-nav">
+      <a href="/cardapio">Cardápio</a>
+      <a href="#">Sobre</a>
+      <a href="#">Contato</a>
+      <a href="#">Política de Privacidade</a>
+      <a href="#">Termos de Serviço</a>
+    </div>
+    <a href="#">Sobre</a>
+    <a href="#">Contato</a>
+    <a href="#">Política de Privacidade</a>
+    <a href="#">Termos de Serviço</a>
+    </div>
+    <div class="social-icons">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+      </svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path
+          d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z">
+        </path>
+      </svg>
+    </div>
+    <p style="font-size: 0.8rem; color: #6C757D;">© 2025 Burger . Todos os direitos reservados.</p>
+  </footer>
+</body>
+
+</html>

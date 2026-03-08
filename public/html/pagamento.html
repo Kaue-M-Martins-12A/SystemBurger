@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burger - Pagamento</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <style>
+        .main-header {
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .checkout-container {
+            max-width: 800px;
+            margin: 40px auto;
+        }
+
+        .summary-section {
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .method-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .method-option.active {
+            border-color: var(--primary-red);
+            background-color: #fff9f9;
+        }
+
+        .radio-circle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .method-option.active .radio-circle {
+            border-color: var(--primary-red);
+        }
+
+        .method-option.active .radio-circle::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-red);
+            border-radius: 50%;
+        }
+
+        .card-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .card-form .full-width {
+            grid-column: span 2;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="main-header">
+        <div class="logo">
+            <a href="/" style="display: flex; align-items: center; gap: 8px; color: inherit; text-decoration: none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M3 13.5C3 12.6716 3.67157 12 4.5 12H19.5C20.3284 12 21 12.6716 21 13.5C21 14.3284 20.3284 15 19.5 15H4.5C3.67157 15 3 14.3284 3 13.5Z" />
+                    <path
+                        d="M4.5 17C3.67157 17 3 17.6716 3 18.5C3 19.3284 3.67157 20 4.5 20H19.5C20.3284 20 21 19.3284 21 18.5C21 17.6716 20.3284 17 19.5 17H4.5Z" />
+                    <path
+                        d="M21 9C21 5.13401 16.9706 2 12 2C7.02944 2 3 5.13401 3 9C3 9.55228 3.44772 10 4 10H20C20.5523 10 21 9.55228 21 9Z" />
+                </svg>
+                <span>Burger</span>
+            </a>
+        </div>
+        <nav class="nav-links">
+            <a href="/cardapio">Menu</a>
+            <a href="/#promocoes">Promoções</a>
+            <a href="#">Sobre nós</a>
+        </nav>
+        <div class="header-actions">
+            <a href="/carrinho" id="cart-link">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span id="cart-count">0</span>
+            </a>
+            <a href="/perfil">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&q=80"
+                    alt="Profile" class="profile-img">
+            </a>
+        </div>
+    </header>
+
+    <main class="checkout-container container">
+        <h1 class="section-title">Pagamento</h1>
+
+        <div class="summary-section">
+            <h2 style="font-size: 1.2rem; margin-bottom: 20px;">Resumo do pedido</h2>
+            <div class="summary-item">
+                <span>Hambúrguer Clássico</span>
+                <span>R$ 25,00</span>
+            </div>
+            <div class="summary-item">
+                <span>Batata Frita</span>
+                <span>R$ 10,00</span>
+            </div>
+            <div class="summary-item">
+                <span>Refrigerante</span>
+                <span>R$ 5,00</span>
+            </div>
+            <div class="summary-total">
+                <span>Total</span>
+                <span>R$ 40,00</span>
+            </div>
+        </div>
+
+        <div>
+            <h2 style="font-size: 1.2rem; margin-bottom: 20px;">Método de pagamento</h2>
+            <div class="payment-methods">
+                <div class="method-option active" onclick="selectMethod('credit', this)">
+                    <div class="radio-circle"></div>
+                    <span>Cartão de crédito/débito</span>
+                </div>
+                <div class="method-option" onclick="selectMethod('pix', this)">
+                    <div class="radio-circle"></div>
+                    <span>PIX</span>
+                </div>
+                <div class="method-option" onclick="selectMethod('cash', this)">
+                    <div class="radio-circle"></div>
+                    <span>Dinheiro na entrega</span>
+                </div>
+            </div>
+
+            <form id="payment-form"
+                onsubmit="event.preventDefault(); alert('Compra finalizada com sucesso!'); window.location.href='/';">
+                <div id="card-fields" class="card-form">
+                    <div class="input-group full-width">
+                        <label>Número do cartão</label>
+                        <input type="text" placeholder="1234 5678 9012 3456" class="input-field" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Data de validade</label>
+                        <input type="text" placeholder="MM/AA" class="input-field" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Código de segurança</label>
+                        <input type="text" placeholder="123" class="input-field" required>
+                    </div>
+                    <div class="input-group full-width">
+                        <label>Nome no cartão</label>
+                        <input type="text" placeholder="Nome completo" class="input-field" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary checkout-btn">Finalizar compra</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function selectMethod(method, btn) {
+            // Update UI
+            const options = document.querySelectorAll('.method-option');
+            options.forEach(opt => opt.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Show/Hide card fields
+            const cardFields = document.getElementById('card-fields');
+            const inputs = cardFields.querySelectorAll('input');
+
+            if (method === 'credit') {
+                cardFields.style.display = 'grid';
+                inputs.forEach(input => input.required = true);
+            } else {
+                cardFields.style.display = 'none';
+                inputs.forEach(input => input.required = false);
+            }
+        }
+    </script>
+</body>
+
+</html>

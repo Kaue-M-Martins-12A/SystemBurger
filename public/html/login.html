@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burger - Login</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <script src="/js/auth.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="auth-container">
+        <header class="auth-header">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M3 13.5C3 12.6716 3.67157 12 4.5 12H19.5C20.3284 12 21 12.6716 21 13.5C21 14.3284 20.3284 15 19.5 15H4.5C3.67157 15 3 14.3284 3 13.5Z" />
+                    <path
+                        d="M4.5 17C3.67157 17 3 17.6716 3 18.5C3 19.3284 3.67157 20 4.5 20H19.5C20.3284 20 21 19.3284 21 18.5C21 17.6716 20.3284 17 19.5 17H4.5Z" />
+                    <path
+                        d="M21 9C21 5.13401 16.9706 2 12 2C7.02944 2 3 5.13401 3 9C3 9.55228 3.44772 10 4 10H20C20.5523 10 21 9.55228 21 9Z" />
+                </svg>
+                <span>Burger</span>
+            </div>
+        </header>
+        <main class="auth-content">
+            <div class="auth-card">
+                <h1 class="title-center">Bem-vindo</h1>
+                <form class="auth-form" id="login-form">
+                    <input type="email" id="login-email" placeholder="E-mail" class="input-field" required>
+                    <input type="password" id="login-password" placeholder="Senha" class="input-field" required>
+                    <p style="font-size: 0.9rem; color: #6C757D;"><a href="#">Esqueceu a senha?</a></p>
+                    <button type="submit" class="btn-primary" id="login-btn">Entrar</button>
+                </form>
+                <div class="auth-footer-link" style="margin-top: 20px;">
+                    <p>Não tem uma conta? <a href="/cadastro">Cadastre-se</a></p>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+<script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        const btn = document.getElementById('login-btn');
+        btn.disabled = true;
+        btn.textContent = 'Carregando...';
+        await Auth.login(email, password);
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+    });
+</script>
+</html>
