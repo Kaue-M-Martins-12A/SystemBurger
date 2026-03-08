@@ -10,18 +10,6 @@
     <script src="/js/cart.js" defer></script>
     <script src="/js/product.js" defer></script>
     <style>
-        .main-header {
-            padding: 15px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: white;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-        }
-
         .category-tabs {
             display: flex;
             gap: 30px;
@@ -99,7 +87,7 @@
             <a href="#">Sobre nós</a>
         </nav>
         <div class="header-actions">
-            <a href="/carrinho" id="cart-link">
+            <a href="/carrinho" id="cart-link" title="Carrinho">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1"></circle>
@@ -108,7 +96,7 @@
                 </svg>
                 <span id="cart-count">0</span>
             </a>
-            <a href="/perfil">
+            <a href="/perfil" title="Meu Perfil">
                 <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&q=80"
                     alt="Profile" class="profile-img">
             </a>
@@ -126,69 +114,8 @@
         </div>
 
         <div class="product-grid" id="menu-grid">
-            <!-- Burgers -->
-            <div class="product-card visible" data-category="burgers">
-                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                    alt="O clássico" class="product-image">
-                <div class="product-info">
-                    <h3 class="product-name">O clássico</h3>
-                    <p class="product-desc">Nosso hambúrguer especial com todos os acompanhamentos.</p>
-                </div>
-            </div>
-            <div class="product-card visible" data-category="burgers">
-                <img src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                    alt="O Picante" class="product-image">
-                <div class="product-info">
-                    <h3 class="product-name">O Picante</h3>
-                    <p class="product-desc">Para quem gosta de uma pimenta extra.</p>
-                </div>
-            </div>
-            <div class="product-card visible" data-category="burgers">
-                <img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                    alt="O Duplo" class="product-image">
-                <div class="product-info">
-                    <h3 class="product-name">O Duplo</h3>
-                    <p class="product-desc">O dobro de carne, o dobro de sabor.</p>
-                </div>
-            </div>
-
-            <!-- Acompanhamentos -->
-            <div class="product-card" data-category="acompanhamentos">
-                <img src="https://images.unsplash.com/photo-1573080493719-44933d980456?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                    alt="Batatas fritas" class="product-image">
-                <div class="product-info">
-                    <h3 class="product-name">Batatas fritas</h3>
-                    <p class="product-desc">Crocante e dourado na medida certa.</p>
-                </div>
-            </div>
-            <div class="product-card" data-category="acompanhamentos">
-                <img src="https://images.unsplash.com/photo-1639024471283-035188835111?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                    alt="Anéis de Cebola" class="product-image">
-                <div class="product-info">
-                    <h3 class="product-name">Anéis de Cebola</h3>
-                    <p class="product-desc">Perfeitamente empanado e frito.</p>
-                </div>
-            </div>
-
-            <!-- Bebidas -->
-            <div class="product-card" data-category="bebidas">
-                <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                    alt="Soda" class="product-image">
-                <div class="product-info">
-                    <h3 class="product-name">Soda</h3>
-                    <p class="product-desc">Recrescante e disponível em diversos sabores.</p>
-                </div>
-            </div>
-
-            <!-- Sobremesas -->
-            <div class="product-card" data-category="sobremesas">
-                <img src="https://images.unsplash.com/photo-1589119908995-c6837fa14878?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                    alt="Brownie" class="product-image">
-                <div class="product-info">
-                    <h3 class="product-name">Brownie</h3>
-                    <p class="product-desc">Quente e acompanhado de calda de chocolate.</p>
-                </div>
-            </div>
+            <!-- Products will be loaded here dynamically -->
+            <p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">Carregando cardápio...</p>
         </div>
     </main>
 
@@ -197,22 +124,47 @@
     </footer>
 
     <script>
+        let allProducts = [];
+
+        async function loadProducts() {
+            try {
+                const res = await fetch('/api/products');
+                allProducts = await res.json();
+                filterCategory('burgers', document.querySelector('.tab-btn.active'));
+            } catch (err) {
+                console.error('Erro ao carregar produtos:', err);
+                document.getElementById('menu-grid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #e01a1a;">Erro ao carregar o cardápio. Tente novamente mais tarde.</p>';
+            }
+        }
+
         function filterCategory(category, btn) {
             // Update tabs
             const btns = document.querySelectorAll('.tab-btn');
             btns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            if (btn) btn.classList.add('active');
 
-            // Update products
-            const cards = document.querySelectorAll('.product-card');
-            cards.forEach(card => {
-                if (card.dataset.category === category) {
-                    card.classList.add('visible');
-                } else {
-                    card.classList.remove('visible');
-                }
-            });
+            // Render matching products
+            const grid = document.getElementById('menu-grid');
+            const filtered = allProducts.filter(p => p.category === category);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">Nenhum produto nesta categoria.</p>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="product-card visible" data-category="${p.category}" onclick="Product.showDetails(${JSON.stringify(p).replace(/"/g, '&quot;')})" style="cursor: pointer;">
+                    <img src="${p.image}" alt="${p.name}" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-name">${p.name}</h3>
+                        <p class="product-desc">${p.description || ''}</p>
+                        <p style="font-weight: 700; color: var(--primary-red); margin-top: 10px;">R$ ${p.price.toFixed(2).replace('.', ',')}</p>
+                    </div>
+                </div>
+            `).join('');
         }
+
+        document.addEventListener('DOMContentLoaded', loadProducts);
     </script>
 </body>
 

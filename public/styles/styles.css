@@ -213,24 +213,54 @@ ul {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.profile-img {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    object-fit: cover;
+/* Header Styles */
+.main-header {
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
-.header-links {
+.nav-links {
     display: flex;
     gap: 30px;
     align-items: center;
 }
 
-.header-links a {
+.nav-links a {
     font-size: 0.9rem;
+    color: var(--text-dark);
     font-weight: 500;
-    color: #333;
-    position: relative;
+}
+
+.header-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.profile-img {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #eee;
+}
+
+/* User Links in Header */
+.header-actions a,
+.nav-links a {
+    transition: color 0.3s ease;
+}
+
+.header-actions a:hover,
+.nav-links a:hover {
+    color: var(--primary-red);
 }
 
 /* Cart Badge */
@@ -239,7 +269,6 @@ ul {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 15px;
 }
 
 #cart-count {

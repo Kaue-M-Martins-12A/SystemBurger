@@ -6,37 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Burger - Pagamento</title>
     <link rel="stylesheet" href="/styles/styles.css">
+    <script src="/js/auth.js" defer></script>
+    <script src="/js/cart.js" defer></script>
     <style>
-        .main-header {
-            padding: 15px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: white;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            font-weight: 500;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
         .checkout-container {
             max-width: 800px;
             margin: 40px auto;
@@ -156,7 +128,7 @@
             <a href="#">Sobre nós</a>
         </nav>
         <div class="header-actions">
-            <a href="/carrinho" id="cart-link">
+            <a href="/carrinho" id="cart-link" title="Carrinho">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1"></circle>
@@ -165,7 +137,7 @@
                 </svg>
                 <span id="cart-count">0</span>
             </a>
-            <a href="/perfil">
+            <a href="/perfil" title="Meu Perfil">
                 <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&q=80"
                     alt="Profile" class="profile-img">
             </a>
@@ -173,25 +145,45 @@
     </header>
 
     <main class="checkout-container container">
-        <h1 class="section-title">Pagamento</h1>
+        <h1 class="section-title">Finalizar Pedido</h1>
+
+        <!-- Seção de Endereço -->
+        <div class="summary-section" style="border-bottom: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    Endereço de Entrega
+                </h2>
+                <button type="button" class="btn-secondary" id="change-address-btn"
+                    style="padding: 5px 15px; font-size: 0.85rem;">Alterar</button>
+            </div>
+
+            <div id="address-display"
+                style="background: #f8f9fa; padding: 20px; border-radius: 12px; border: 1px dashed #ced4da;">
+                <p id="current-address" style="color: #495057; font-size: 0.95rem; line-height: 1.5;">Pesquisando seu
+                    endereço salvo...</p>
+                <div id="address-edit-form" style="display: none; margin-top: 15px;">
+                    <textarea id="temp-address-input" class="input-field"
+                        style="background: white; border: 1px solid #ddd; height: 80px; resize: none; margin-bottom: 10px;"
+                        placeholder="Digite o novo endereço..."></textarea>
+                    <button type="button" class="btn-primary" id="save-temp-address"
+                        style="padding: 8px 20px; font-size: 0.85rem;">Confirmar Endereço</button>
+                </div>
+            </div>
+        </div>
 
         <div class="summary-section">
             <h2 style="font-size: 1.2rem; margin-bottom: 20px;">Resumo do pedido</h2>
-            <div class="summary-item">
-                <span>Hambúrguer Clássico</span>
-                <span>R$ 25,00</span>
-            </div>
-            <div class="summary-item">
-                <span>Batata Frita</span>
-                <span>R$ 10,00</span>
-            </div>
-            <div class="summary-item">
-                <span>Refrigerante</span>
-                <span>R$ 5,00</span>
+            <div id="checkout-items-list">
+                <!-- Dynamic items -->
             </div>
             <div class="summary-total">
                 <span>Total</span>
-                <span>R$ 40,00</span>
+                <span id="final-total-value">R$ 0,00</span>
             </div>
         </div>
 
@@ -238,13 +230,74 @@
     </main>
 
     <script>
+        document.addEventListener('authLoaded', async () => {
+            if (!Auth.isLoggedIn()) {
+                window.location.href = '/login';
+                return;
+            }
+
+            // Load Address
+            const user = Auth.getUser();
+            const addressDisplay = document.getElementById('current-address');
+            if (user.address) {
+                addressDisplay.textContent = user.address;
+            } else {
+                addressDisplay.innerHTML = '<span style="color: #e01a1a;">Nenhum endereço cadastrado.</span> Clique em alterar para informar.';
+            }
+
+            // Render Cart Summary
+            const items = Cart.getItems();
+            const listContainer = document.getElementById('checkout-items-list');
+            let total = 0;
+
+            if (items.length === 0) {
+                window.location.href = '/cardapio';
+                return;
+            }
+
+            listContainer.innerHTML = items.map(item => {
+                total += item.price * item.quantity;
+                return `
+                    <div class="summary-item">
+                        <span>${item.name} (x${item.quantity})</span>
+                        <span>R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('final-total-value').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+
+            // Address Change Logic
+            const changeBtn = document.getElementById('change-address-btn');
+            const editForm = document.getElementById('address-edit-form');
+            const tempInput = document.getElementById('temp-address-input');
+            const saveBtn = document.getElementById('save-temp-address');
+
+            changeBtn.addEventListener('click', () => {
+                const isEditing = editForm.style.display === 'block';
+                editForm.style.display = isEditing ? 'none' : 'block';
+                changeBtn.textContent = isEditing ? 'Alterar' : 'Cancelar';
+                if (!isEditing) tempInput.value = user.address || '';
+            });
+
+            saveBtn.addEventListener('click', () => {
+                const newAddress = tempInput.value.trim();
+                if (newAddress) {
+                    addressDisplay.textContent = newAddress;
+                    editForm.style.display = 'none';
+                    changeBtn.textContent = 'Alterar';
+                    // Optional: Update user object in Auth state for this session
+                    user.address = newAddress;
+                } else {
+                    alert('Por favor, informe um endereço.');
+                }
+            });
+        });
+
         function selectMethod(method, btn) {
-            // Update UI
             const options = document.querySelectorAll('.method-option');
             options.forEach(opt => opt.classList.remove('active'));
             btn.classList.add('active');
 
-            // Show/Hide card fields
             const cardFields = document.getElementById('card-fields');
             const inputs = cardFields.querySelectorAll('input');
 
@@ -256,6 +309,35 @@
                 inputs.forEach(input => input.required = false);
             }
         }
+
+        document.getElementById('payment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const address = document.getElementById('current-address').textContent;
+            if (address.includes('Nenhum endereço')) {
+                alert('Por favor, confirme seu endereço de entrega.');
+                return;
+            }
+
+            try {
+                const items = Cart.getItems();
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items, address })
+                });
+
+                if (res.ok) {
+                    Cart.clear();
+                    alert('Pedido finalizado com sucesso! Seu Burger chegará em instantes.');
+                    window.location.href = '/';
+                } else {
+                    const data = await res.json();
+                    alert('Erro ao processar pedido: ' + data.error);
+                }
+            } catch (err) {
+                alert('Erro de conexão ao processar pedido.');
+            }
+        });
     </script>
 </body>
 

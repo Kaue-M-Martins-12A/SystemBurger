@@ -100,7 +100,7 @@ exports.authMiddleware = (req, res, next) => {
 exports.getProfile = async (req, res) => {
     try {
         const db = await getDb();
-        const user = await db.get('SELECT id, name, email, phone, profile_picture FROM users WHERE id = ?', [req.user.id]);
+        const user = await db.get('SELECT id, name, email, phone, profile_picture, address FROM users WHERE id = ?', [req.user.id]);
         if (!user) return res.status(404).json({ error: 'Usuário não encontrado.' });
         res.json(user);
     } catch (error) {
@@ -111,7 +111,7 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, email, phone } = req.body;
+        const { name, email, phone, address } = req.body;
         if (!name || !email) {
             return res.status(400).json({ error: 'Nome e email são obrigatórios.' });
         }
@@ -123,8 +123,8 @@ exports.updateProfile = async (req, res) => {
         if (existingUser) return res.status(400).json({ error: 'Este e-mail já está em uso.' });
 
         await db.run(
-            'UPDATE users SET name = ?, email = ?, phone = ? WHERE id = ?',
-            [name, email, phone || null, req.user.id]
+            'UPDATE users SET name = ?, email = ?, phone = ?, address = ? WHERE id = ?',
+            [name, email, phone || null, address || null, req.user.id]
         );
 
         res.json({ message: 'Perfil atualizado com sucesso!' });
@@ -138,7 +138,7 @@ exports.updateProfile = async (req, res) => {
 
 exports.saveOrder = async (req, res) => {
     try {
-        const { items } = req.body; // Array de { id, quantity, price }
+        const { items, address } = req.body; // Array de { id, quantity, price } e endereço
         if (!items || items.length === 0) {
             return res.status(400).json({ error: 'Carrinho vazio.' });
         }
@@ -148,8 +148,8 @@ exports.saveOrder = async (req, res) => {
 
         // Inicia a compra
         const result = await db.run(
-            'INSERT INTO orders (user_id, total, status) VALUES (?, ?, ?)',
-            [req.user.id, total, 'Aprovado'] // Simulando já aprovado
+            'INSERT INTO orders (user_id, total, status, address) VALUES (?, ?, ?, ?)',
+            [req.user.id, total, 'Aprovado', address || null] // Simulando já aprovado
         );
         const orderId = result.lastID;
 
@@ -224,13 +224,20 @@ exports.getRecommendations = async (req, res) => {
 };
 
 // Verifica Status de Login (para frontend)
-exports.checkAuth = (req, res) => {
+exports.checkAuth = async (req, res) => {
     const token = req.cookies.token;
     if (!token) return res.json({ isLoggedIn: false });
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        res.json({ isLoggedIn: true, user: decoded });
+        const db = await getDb();
+        const user = await db.get('SELECT id, name, email, profile_picture, address FROM users WHERE id = ?', [decoded.id]);
+
+        if (user) {
+            res.json({ isLoggedIn: true, user: user });
+        } else {
+            res.json({ isLoggedIn: false });
+        }
     } catch (error) {
         res.json({ isLoggedIn: false });
     }

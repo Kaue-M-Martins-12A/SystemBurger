@@ -16,6 +16,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Use structured routes
 app.use('/', routes);
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error('Server Error:', err);
+    const status = err.status || 500;
+    res.status(status).json({
+        error: err.message || 'Erro interno no servidor',
+        details: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

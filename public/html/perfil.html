@@ -10,35 +10,6 @@
     <script src="/js/auth.js" defer></script>
     <script src="/js/cart.js" defer></script>
     <style>
-        .main-header {
-            padding: 15px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: white;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            font-weight: 500;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
     </style>
 </head>
 
@@ -63,7 +34,7 @@
             <a href="#">Sobre nós</a>
         </nav>
         <div class="header-actions">
-            <a href="/carrinho" id="cart-link">
+            <a href="/carrinho" id="cart-link" title="Carrinho">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1"></circle>
@@ -72,7 +43,7 @@
                 </svg>
                 <span id="cart-count">0</span>
             </a>
-            <a href="/perfil">
+            <a href="/perfil" title="Meu Perfil">
                 <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&q=80"
                     alt="Profile" class="profile-img">
             </a>
@@ -99,7 +70,7 @@
                     <button type="button" class="btn-secondary"
                         onclick="document.getElementById('prof-photo-input').click()"
                         style="padding: 8px 15px; font-size: 0.85rem;">Escolher Foto</button>
-                    <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">JPG, PNG ou WebP. Máx 5MB.</p>
+                    <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">JPG, PNG ou WebP. Máx 400MB.</p>
                 </div>
             </div>
 
@@ -118,6 +89,11 @@
                     <label class="input-label">Telefone</label>
                     <input type="tel" id="prof-phone" placeholder="Seu telefone" class="input-field"
                         style="background-color: white; border: 1px solid #ddd;">
+                </div>
+                <div style="margin-top: 15px;">
+                    <label class="input-label">Endereço de Entrega</label>
+                    <textarea id="prof-address" placeholder="Rua, Número, Bairro, Cidade..." class="input-field"
+                        style="background-color: white; border: 1px solid #ddd; height: 80px; resize: none;"></textarea>
                 </div>
                 <div style="margin-top: 30px; display: flex; gap: 15px;">
                     <button type="submit" class="btn-primary" id="prof-btn">Salvar Alterações</button>
@@ -168,6 +144,7 @@
                     document.getElementById('prof-name').value = prof.name || '';
                     document.getElementById('prof-email').value = prof.email || '';
                     document.getElementById('prof-phone').value = prof.phone || '';
+                    document.getElementById('prof-address').value = prof.address || '';
                     if (prof.profile_picture) {
                         document.getElementById('prof-img-preview').src = prof.profile_picture;
                     }
@@ -220,14 +197,25 @@
                         body: JSON.stringify({
                             name: document.getElementById('prof-name').value,
                             email: document.getElementById('prof-email').value,
-                            phone: document.getElementById('prof-phone').value
+                            phone: document.getElementById('prof-phone').value,
+                            address: document.getElementById('prof-address').value
                         })
                     });
-                    const data = await res.json();
+
+                    let data;
+                    const contentType = res.headers.get("content-type");
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        data = await res.json();
+                    } else {
+                        const text = await res.text();
+                        throw new Error("Resposta do servidor não é JSON: " + text.substring(0, 50));
+                    }
+
                     if (res.ok) alert('Perfil atualizado com sucesso!');
                     else alert(data.error || 'Erro ao atualizar.');
                 } catch (err) {
-                    alert('Erro de conexão ao servidor.');
+                    console.error('Update error:', err);
+                    alert('Erro ao atualizar perfil: ' + (err.message || 'Erro de conexão ao servidor.'));
                 }
                 btn.disabled = false;
                 btn.textContent = 'Salvar Alterações';

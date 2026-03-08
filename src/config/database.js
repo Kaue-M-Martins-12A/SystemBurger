@@ -29,16 +29,27 @@ async function initializeTables(db) {
             email TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL,
             phone TEXT,
-            profile_picture TEXT
+            profile_picture TEXT,
+            address TEXT
         )
     `);
 
     // Migração de banco existente (adiciona coluna se não existir)
     try {
         await db.exec('ALTER TABLE users ADD COLUMN profile_picture TEXT');
-    } catch (e) {
-        // Ignora se a coluna já existir
-    }
+    } catch (e) { }
+
+    try {
+        await db.exec('ALTER TABLE users ADD COLUMN address TEXT');
+    } catch (e) { }
+
+    try {
+        await db.exec('ALTER TABLE orders ADD COLUMN address TEXT');
+    } catch (e) { }
+
+    try {
+        await db.exec('ALTER TABLE products ADD COLUMN category TEXT');
+    } catch (e) { }
 
     // Tabela de Produtos
     await db.exec(`
@@ -47,7 +58,8 @@ async function initializeTables(db) {
             name TEXT NOT NULL,
             description TEXT,
             price REAL NOT NULL,
-            image TEXT
+            image TEXT,
+            category TEXT
         )
     `);
 
@@ -71,6 +83,7 @@ async function initializeTables(db) {
             total REAL NOT NULL,
             status TEXT NOT NULL DEFAULT 'Pendente',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            address TEXT,
             FOREIGN KEY(user_id) REFERENCES users(id)
         )
     `);
@@ -92,18 +105,28 @@ async function initializeTables(db) {
     const productCount = await db.get('SELECT COUNT(*) as count FROM products');
     if (productCount.count === 0) {
         const defaultProducts = [
-            { name: 'X-Burger Clássico', desc: 'Hambúrguer de 180g, queijo cheddar, alface, tomate e molho especial.', price: 25.0, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
-            { name: 'Duplo Bacon', desc: 'Dois hambúrgueres de 180g, muito queijo cheddar e fatias crocantes de bacon.', price: 32.0, image: 'https://images.unsplash.com/photo-1594212586737-08c407842dd7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
-            { name: 'Frango Crocante', desc: 'Peito de frango empanado, maionese temperada e alface americana.', price: 22.0, image: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
-            { name: 'Combo Casal', desc: '2 X-Burgers, 2 Batatas Fritas Médias e 2 Refrigerantes lata.', price: 59.9, image: 'https://plus.unsplash.com/premium_photo-1683619761492-6390711c6c0b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-            { name: 'Combo Família', desc: '4 X-Burgers, Porção Gigante de Batata, Onion Rings e Refrigerante 2L.', price: 110.0, image: 'https://plus.unsplash.com/premium_photo-1683655058728-319cefa3ea22?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-            { name: 'Batata Frita', desc: 'Porção individual de batatas fritas crocantes.', price: 12.0, image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' }
+            // Burgers
+            { name: 'X-Burger Clássico', desc: 'Hambúrguer de 180g, queijo cheddar, alface, tomate e molho especial.', price: 25.0, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=60', category: 'burgers' },
+            { name: 'Duplo Bacon', desc: 'Dois hambúrgueres de 180g, muito queijo cheddar e fatias crocantes de bacon.', price: 32.0, image: 'https://images.unsplash.com/photo-1594212586737-08c407842dd7?auto=format&fit=crop&w=500&q=60', category: 'burgers' },
+            { name: 'Frango Crocante', desc: 'Peito de frango empanado, maionese temperada e alface americana.', price: 22.0, image: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=500&q=60', category: 'burgers' },
+
+            // Acompanhamentos
+            { name: 'Batata Frita', desc: 'Porção individual de batatas fritas crocantes.', price: 12.0, image: 'https://images.unsplash.com/photo-1573080493719-44933d980456?auto=format&fit=crop&w=500&q=60', category: 'acompanhamentos' },
+            { name: 'Anéis de Cebola', desc: 'Porção de anéis de cebola crocantes.', price: 15.0, image: 'https://images.unsplash.com/photo-1639024471283-035188835111?auto=format&fit=crop&w=500&q=60', category: 'acompanhamentos' },
+
+            // Bebidas
+            { name: 'Refrigerante Lata', desc: 'Lata 350ml (Coca-Cola, Guaraná, Fanta).', price: 6.0, image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=500&q=60', category: 'bebidas' },
+            { name: 'Suco Natural', desc: 'Suco de laranja feito na hora 400ml.', price: 8.0, image: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=500&q=60', category: 'bebidas' },
+
+            // Sobremesas
+            { name: 'Brownie Especial', desc: 'Brownie de chocolate belga com nozes.', price: 14.0, image: 'https://images.unsplash.com/photo-1589119908995-c6837fa14878?auto=format&fit=crop&w=500&q=60', category: 'sobremesas' },
+            { name: 'Milkshake Morango', desc: 'Milkshake cremoso com calda de morango.', price: 18.0, image: 'https://images.unsplash.com/photo-1553787499-6f913386001c?auto=format&fit=crop&w=500&q=60', category: 'sobremesas' }
         ];
 
         for (const p of defaultProducts) {
             await db.run(
-                'INSERT INTO products (name, description, price, image) VALUES (?, ?, ?, ?)',
-                [p.name, p.desc, p.price, p.image]
+                'INSERT INTO products (name, description, price, image, category) VALUES (?, ?, ?, ?, ?)',
+                [p.name, p.desc, p.price, p.image, p.category]
             );
         }
     }
