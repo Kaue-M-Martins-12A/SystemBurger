@@ -2,6 +2,33 @@ const express = require('express');
 const router = express.Router();
 const pageController = require('../controllers/pageController');
 const apiController = require('../controllers/apiController');
+const multer = require('multer');
+const path = require('path');
+
+// Configuração do Multer para Uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/uploads/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + Math.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // Limite de 5MB
+    fileFilter: (req, file, cb) => {
+        const filetypes = /jpeg|jpg|png|webp/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+        cb(new Error('Apenas imagens (jpeg, jpg, png, webp) são permitidas!'));
+    }
+});
 
 // HTML Pages
 router.get('/', pageController.getHome);
@@ -24,6 +51,7 @@ router.get('/api/products', apiController.getProducts);
 // API Rotas (Protegidas pelo Middleware de Auth)
 router.get('/api/user/profile', apiController.authMiddleware, apiController.getProfile);
 router.put('/api/user/profile', apiController.authMiddleware, apiController.updateProfile);
+router.post('/api/user/profile-picture', apiController.authMiddleware, upload.single('avatar'), apiController.updateProfilePicture);
 router.post('/api/orders', apiController.authMiddleware, apiController.saveOrder);
 router.get('/api/orders', apiController.authMiddleware, apiController.getOrders);
 router.get('/api/recommendations', apiController.authMiddleware, apiController.getRecommendations);

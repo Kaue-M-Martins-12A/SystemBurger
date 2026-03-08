@@ -60,7 +60,15 @@ exports.login = async (req, res) => {
         const token = jwt.sign({ id: user.id, name: user.name, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
         res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
-        res.json({ message: 'Login realizado com sucesso!', user: { id: user.id, name: user.name, email: user.email, phone: user.phone } });
+        res.json({
+            message: 'Login realizado com sucesso!', user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                profile_picture: user.profile_picture
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Erro interno no servidor ao fazer login.' });
@@ -92,7 +100,7 @@ exports.authMiddleware = (req, res, next) => {
 exports.getProfile = async (req, res) => {
     try {
         const db = await getDb();
-        const user = await db.get('SELECT id, name, email, phone FROM users WHERE id = ?', [req.user.id]);
+        const user = await db.get('SELECT id, name, email, phone, profile_picture FROM users WHERE id = ?', [req.user.id]);
         if (!user) return res.status(404).json({ error: 'Usuário não encontrado.' });
         res.json(user);
     } catch (error) {
@@ -225,5 +233,27 @@ exports.checkAuth = (req, res) => {
         res.json({ isLoggedIn: true, user: decoded });
     } catch (error) {
         res.json({ isLoggedIn: false });
+    }
+};
+
+exports.updateProfilePicture = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'Nenhum arquivo enviado.' });
+        }
+
+        const userId = req.user.id;
+        const profilePicturePath = `/uploads/${req.file.filename}`;
+
+        const db = await getDb();
+        await db.run('UPDATE users SET profile_picture = ? WHERE id = ?', [profilePicturePath, userId]);
+
+        res.json({
+            message: 'Foto de perfil atualizada com sucesso!',
+            profile_picture: profilePicturePath
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Erro ao atualizar foto de perfil.' });
     }
 };

@@ -28,9 +28,17 @@ async function initializeTables(db) {
             name TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL,
-            phone TEXT
+            phone TEXT,
+            profile_picture TEXT
         )
     `);
+
+    // Migração de banco existente (adiciona coluna se não existir)
+    try {
+        await db.exec('ALTER TABLE users ADD COLUMN profile_picture TEXT');
+    } catch (e) {
+        // Ignora se a coluna já existir
+    }
 
     // Tabela de Produtos
     await db.exec(`

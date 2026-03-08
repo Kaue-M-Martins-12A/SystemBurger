@@ -75,9 +75,12 @@ const Auth = {
             if (loginLink || headerActions.innerHTML.includes('href="/login"')) {
                 // If it's a div containing login/register
                 const divContainer = headerActions.querySelector('div[style*="display: flex"]');
+                const user = Auth.getUser();
+                const profileImg = user.profile_picture || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&q=80';
+
                 const profileHTML = `
                     <a href="/perfil">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&q=80" alt="Profile" class="profile-img">
+                        <img src="${profileImg}" alt="Profile" class="profile-img">
                     </a>
                 `;
                 if (divContainer) {
